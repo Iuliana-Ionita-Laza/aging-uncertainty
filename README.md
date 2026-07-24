@@ -22,7 +22,7 @@ fsQRPPA (for model training) [https://anonymous.4open.science/r/fsQRPPA-6764/](h
 
 ## Organ aging models
 
-The organ aging models developed using UK Biobank Olink proteomics data are available in the [model directory](/model). 
+The organ aging models developed using UK Biobank Olink plasma proteomics data are available in the [model directory](/model). 
 
 The proteins included in the multi-organ and organ-specific models were defined according to the paper, ["Plasma proteomics links brain and immune system aging with healthspan and longevity"](https://www.nature.com/articles/s41591-025-03798-1).
 
@@ -36,8 +36,8 @@ Users can apply the provided [models](model/qr.beta.proteomic.age.tsv) to predic
 
 The example input data includes 
 
-1) the [chronological age](example/example.age.tsv) for 1,000 individuals (column "IID").
-2) the [Olink protein expression matrix](example/example.proteomics.tsv) containing simulated proteomic profiles for 1,458 proteins (remaining columns) across 1,000 individuals (column "IID").
+1) the [chronological age at blood sample collection](example/example.age.tsv) for 1,000 individuals (column "IID").
+2) the [Olink plasma protein expression matrix](example/example.proteomics.tsv) containing simulated proteomic profiles for 1,458 proteins (remaining columns) across 1,000 individuals (column "IID").
 
 Run the R script [apply_age_model.R](apply_age_model.R) to perform organ age prediction and predictive uncertainty quantification on the simulated dataset.
 
