@@ -66,7 +66,7 @@ The output includes the following columns:
 
 ## Model training with user's own Olink proteomics data
 
-Users can train their own models using the [fsQRPPA](https://anonymous.4open.science/r/fsQRPPA-6764/) method on a Olink proteomics dataset. The fsQRPPA R package, available at [https://anonymous.4open.science/r/fsQRPPA-6764/](https://anonymous.4open.science/r/fsQRPPA-6764/), is required for model training.
+Users can train their own models using the [fsQRPPA](https://arxiv.org/abs/2601.02826) method on a Olink proteomics dataset. The fsQRPPA R package, available at [https://anonymous.4open.science/r/fsQRPPA-6764/](https://anonymous.4open.science/r/fsQRPPA-6764/), is required for model training.
 
 An example, [train_age_model.R](train_age_model.R), is provided to demonstrate the model develpment with a [simulated toy dataset](/example).
 
