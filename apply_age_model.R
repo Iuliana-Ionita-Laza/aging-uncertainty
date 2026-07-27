@@ -13,15 +13,16 @@ options(scipen = 999)
 dir = paste0(".")
 
 ## 1. Phenotype data
-## 1.1 Chronological age at sample collection and other covarites such as sex
+#### 1.1 Chronological age at sample collection and other covarites such as sex
 df.age = fread(file = paste0(dir, "/example/example.age.tsv"),
                header = T, sep = "\t", data.table = F, stringsAsFactors = F)
 
-## 1.2 Protein expression matrix
-## IID column: unique sample identifier
-## remaining columns: protein expression values, with one column per protein and one row per sample
+#### 1.2 Protein expression matrix
+#### IID column: unique sample identifier
+#### remaining columns: protein expression values, with one column per protein and one row per sample
 df.prot = fread(file = paste0(dir, "/example/example.proteomics.tsv"),
                 header = T, sep = "\t", data.table = F, stringsAsFactors = F)
+#### protein expression values are standardized to z-scores for each protein across all individuals
 mt.prot = df.prot %>% select(-IID) %>% scale() %>% as.data.frame()
 mt.prot[is.na(mt.prot)] = 0
 mt.prot = mt.prot %>% mutate(Intercept = 1)
@@ -31,13 +32,18 @@ mt.prot = mt.prot %>% mutate(Intercept = 1)
 ## 2. Organ age models
 ## Select the identifier column from the model weight table to 
 ## match the protein names in expression matrix.
+## 
 ## For example, 
 ## if proteins are named using the Olink panel name and gene symbol,
 ## create an identifier column in the model weight table: 
-## df.beta = mutate(Predictor = paste0(Protein.Panel, "_", Gene.Symbol))
+## df.beta = df.beta %>% mutate(Predictor = paste0(Protein.Panel, "_", Gene.Symbol))
+##
 ## By default, 
 ## the assay target ID is assumed to be the common identifier
 ## used to map the proteins between the expression matrix and the model weights
+##
+## The model file includes one row per organ for the intercept term in addition to 
+## the protein predictors. The intercept should be included when calculating predictions.
 df.beta = fread(file = paste0(dir, "/model/qr.beta.proteomic.age.tsv"),
                 header = T, sep = "\t", data.table = F, stringsAsFactors = F)
 df.beta = df.beta %>% mutate(Predictor = Assay.Target)
@@ -283,7 +289,7 @@ g1 = ggplot(data = df.pred,
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         panel.border = element_rect(fill = NA, color = "#000000"),
-        text = element_text(family = "Helvetica"),
+        # text = element_text(family = "Helvetica"),
         strip.text = element_text(size = 10, color = "#000000"),
         axis.text = element_text(size = 10, color = "#000000"),
         axis.title = element_text(size = 10, color = "#000000"),
@@ -319,7 +325,7 @@ g2 = ggplot(data = df.pred,
         panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         panel.border = element_rect(fill = NA, color = "#000000"),
-        text = element_text(family = "Helvetica"),
+        # text = element_text(family = "Helvetica"),
         axis.text.x = element_text(size = 10, color = "#000000", angle = 45, hjust = 1),
         axis.text.y = element_text(size = 10, color = "#000000"),
         axis.title.x = element_blank(),
@@ -378,7 +384,7 @@ g3 = ggplot(data = df.extr,
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         strip.placement = "outside",
-        text = element_text(family = "Helvetica"),
+        # text = element_text(family = "Helvetica"),
         strip.text = element_text(size = 10, color = "#000000"),
         axis.text.x = element_text(size = 10, color = "#000000", angle = 45, hjust = 1),
         axis.text.y = element_text(size = 10, color = "#000000"),
@@ -391,32 +397,5 @@ ofile = paste0(dir, "/example/fig.dist.gap.prob.extreme.png")
 ggsave(plot = g3, 
        filename = ofile,
        device = "png", bg = "#ffffff", width = 4, height = 5.283)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

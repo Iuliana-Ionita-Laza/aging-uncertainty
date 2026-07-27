@@ -4,7 +4,11 @@ This repository provides code and documentation for proteomic age prediction and
 
 
 
-## Install dependent packages in R
+## Application of organ aging models trained on UK Biobank Olink proteomics data
+
+
+
+### Install dependent packages in R
 
 data.table [https://CRAN.R-project.org/package=data.table](https://CRAN.R-project.org/package=data.table)
 
@@ -20,7 +24,7 @@ fsQRPPA (for model training) [https://anonymous.4open.science/r/fsQRPPA-6764/](h
 
 
 
-## Organ aging models
+### Organ aging models
 
 The organ aging models developed using UK Biobank Olink plasma proteomics data are available in the [model directory](/model). 
 
@@ -28,7 +32,7 @@ The proteins included in the multi-organ and organ-specific models were defined 
 
 
 
-## Example of organ age prediction
+### Example of organ age prediction
 
 A simulated toy dataset is provided in the [example directory](/example) to demonstrate the prediction workflow. 
 
@@ -39,11 +43,11 @@ The example input data includes
 1) the [chronological age at blood sample collection](example/example.age.tsv) for 1,000 individuals (column "IID").
 2) the [Olink plasma protein expression matrix](example/example.proteomics.tsv) containing simulated proteomic profiles for 1,458 proteins (remaining columns) across 1,000 individuals (column "IID").
 
-Run the R script [apply_age_model.R](apply_age_model.R) to perform organ age prediction and predictive uncertainty quantification on the simulated dataset.
+Run the R script [apply_age_model.R](apply_age_model.R) to perform organ age prediction, predictive uncertainty quantification, and downstream analyses on the simulated dataset.
 
 
 
-## Output of organ age prediction
+### Output of organ age prediction
 
 The [script](apply_age_model.R) generates a tab-delimited text file containing organ age predictions and predictive uncertainty measures. 
 
@@ -55,16 +59,18 @@ The output includes the following columns:
 - "Organ": organ model name.
 - "Age.QR0.5": predicted organ age using the corresponding organ model indicated in the "Organ" column.
 - "Gap.QR0.5": standardized age gap (measure of accelerated or decelerated aging) for the corresponding organ model.
-- "Prob": tail probability (uncertainty quantification) for the corresponding organ model.
+- "Tail.Prob": tail probability (uncertainty quantification) for the corresponding organ model.
 - "Interval.Length": length of prediction interval (uncertainty quantification) for the corresponding organ model.
 
 
 
-## Model training
+## Model training with user's own Olink proteomics data
 
-Use fsQRPPA [https://anonymous.4open.science/r/fsQRPPA-6764/](https://anonymous.4open.science/r/fsQRPPA-6764/) and simulated training dataset.
+Users can train their own models using the [fsQRPPA](https://anonymous.4open.science/r/fsQRPPA-6764/) method on a Olink proteomics dataset. The fsQRPPA R package, available at [https://anonymous.4open.science/r/fsQRPPA-6764/](https://anonymous.4open.science/r/fsQRPPA-6764/), is required for model training.
 
-TBA.
+An example, [train_age_model.R](train_age_model.R), is provided to demonstrate the model develpment with a [simulated toy dataset](/example).
+
+Although the provided code allows users to train organ aging models using their own proteomics data, the models rely on the predefined sets of organ-enriched proteins. These protein sets were derived from approximately 3,000 proteins measured by the Olink Explore 3072 platform, and were originally established in the study ["Plasma proteomics links brain and immune system aging with healthspan and longevity"](https://www.nature.com/articles/s41591-025-03798-1). Therefore, to achieve optimal prediction performance, users' datasets should cover as many of these organ-enriched proteins as possible. Limited overlap between the available proteins and the predefined organ-enriched protein sets may reduce model accuracy.
 
 
 
