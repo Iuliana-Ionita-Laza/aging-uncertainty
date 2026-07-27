@@ -10,17 +10,14 @@ This repository provides code and documentation for proteomic age prediction and
 
 ### Install dependent packages in R
 
-data.table [https://CRAN.R-project.org/package=data.table](https://CRAN.R-project.org/package=data.table)
-
-dplyr [https://CRAN.R-project.org/package=dplyr](https://CRAN.R-project.org/package=dplyr)
-
-tidyr [https://CRAN.R-project.org/package=tidyr](https://CRAN.R-project.org/package=tidyr)
-
-stringr [https://CRAN.R-project.org/package=stringr](https://CRAN.R-project.org/package=stringr)
-
-splines2 [https://CRAN.R-project.org/package=splines2](https://CRAN.R-project.org/package=splines2)
-
-fsQRPPA (for model training) [https://anonymous.4open.science/r/fsQRPPA-6764/](https://anonymous.4open.science/r/fsQRPPA-6764/)
+- data.table [https://CRAN.R-project.org/package=data.table](https://CRAN.R-project.org/package=data.table)
+- dplyr [https://CRAN.R-project.org/package=dplyr](https://CRAN.R-project.org/package=dplyr)
+- tidyr [https://CRAN.R-project.org/package=tidyr](https://CRAN.R-project.org/package=tidyr)
+- stringr [https://CRAN.R-project.org/package=stringr](https://CRAN.R-project.org/package=stringr)
+- splines2 [https://CRAN.R-project.org/package=splines2](https://CRAN.R-project.org/package=splines2)
+- ggplot2 [https://CRAN.R-project.org/package=ggplot2](https://CRAN.R-project.org/package=ggplot2)
+- survival [https://CRAN.R-project.org/package=survival](https://CRAN.R-project.org/package=survival)
+- fsQRPPA (for model training) [https://anonymous.4open.science/r/fsQRPPA-6764/](https://anonymous.4open.science/r/fsQRPPA-6764/)
 
 
 
