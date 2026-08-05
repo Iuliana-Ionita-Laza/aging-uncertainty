@@ -5,6 +5,7 @@ library(data.table)
 library(dplyr)
 library(tidyr)
 library(stringr)
+library(splines2)
 library(fsQRPPA)
 library(RcppParallel)
 options(scipen = 999)
@@ -90,7 +91,7 @@ df.organ = df.organ %>% mutate(Predictor = Assay.Target)
 
 
 ## 2. Model training
-#### 2.1 model parameters
+#### 2.1 Model parameters
 #### adjust the maximum number of CPU threads based on the user's computing environment
 max.nthread = 16
 RcppParallel::setThreadOptions(numThreads = max.nthread)
@@ -180,25 +181,106 @@ for (ogn in ogn.pool) {
     df.pred = rbind(df.pred,
                     as.data.frame(opt.pred) %>%
                       mutate(Organ = ogn, Tau = tau) %>%
-                      mutate(df.prot %>% select(IID, Set, Age)))
+                      mutate(df.prot %>% select(IID)))
   }
 }
 
+
+
+## 3. Model and predictions
+#### 3.1 Age prediction model coefficients
 df.beta = df.beta %>% 
   pivot_wider(id_cols = c(Organ, Predictor), 
               names_from = Tau, names_prefix = "QR", 
               values_from = Beta)
-df.pred = df.pred %>% 
-  pivot_wider(id_cols = c(Organ, IID, Set, Age), 
-              names_from = Tau, names_prefix = "QR", 
-              values_from = V1)
 
 ofile = paste0(dir, "/example/example.model.beta.tsv")
 fwrite(x = df.beta,
        file = ofile,
        quote = F, sep = "\t", row.names = F, col.names = T)
 
+
+
+#### 3.2 Age prediction results for all samples
+#### post hoc sorting
+df.qntl = data.frame(Name = df.pred %>% distinct(Tau) %>% arrange(Tau) %>% pull(Tau), 
+                     stringsAsFactors = F) %>%
+  mutate(Idx = 1:nrow(.), Name = paste0("QR", Name))
+df.pred = df.pred %>% 
+  group_by(Organ, IID) %>%
+  arrange(V1, Tau, .by_group = T) %>%
+  mutate(Idx = row_number()) %>%
+  ungroup() %>%
+  left_join(y = df.qntl, by = join_by(Idx)) %>%
+  pivot_wider(id_cols = c(Organ, IID), 
+              names_from = Name, 
+              values_from = V1)
+df.pred = df.pred %>% 
+  left_join(y = df.prot %>% select(IID, Set, Age), by = join_by(IID)) %>%
+  relocate(Set, Age, .after = IID)
+
 ofile = paste0(dir, "/example/example.model.prediction.tsv")
+fwrite(x = df.pred,
+       file = ofile,
+       quote = F, sep = "\t", row.names = F, col.names = T)
+
+
+
+#### 3.3 Age gap and predictive uncertainty for test samples
+df.gap = data.frame()
+ogn.pool = df.beta %>% distinct(Organ) %>% pull(Organ)
+for (ogn in ogn.pool) {
+  #### age prediction => Age.QR0.5
+  #### age-calibrated age gap => Gap.QR0.5
+  #### standardized age-calibrated age gap z-score => Gap.Std.QR0.5
+  pred = df.pred %>% 
+    filter(Organ == ogn, Set == "test")
+  fit = lm(data = pred, formula = QR0.5 ~ Age)
+  adj = unname(fit$fitted.values)
+  pred = pred %>% 
+    mutate(across(.cols = starts_with("QR"),
+                  .fns = ~ .x - adj,
+                  .names = "Gap.{.col}"),
+           across(.cols = starts_with("QR"),
+                  .fns = ~ .x - adj,
+                  .names = "Gap.Std.{.col}")) %>%
+    rename_with(.cols = starts_with("QR"), 
+                .fn = ~ paste0("Age.", .x))
+  m.pred = pred %>% pull(Gap.Std.QR0.5) %>% mean()
+  sd.pred = pred %>% pull(Gap.Std.QR0.5) %>% sd()
+  pred = pred %>% 
+    mutate(across(.cols = starts_with("Gap.Std"),
+                  .fns = ~ (.x - m.pred) / sd.pred))
+  
+  #### tail probability => Tail.Prob
+  pred = pred %>% mutate(Tail.Prob = 0)
+  th.prob = 0
+  n.sample = 10000
+  set.seed(seed = 256)
+  prob.int = runif(n.sample, 0, 1)
+  prob.cum = c(0.025, (1:9) / 10, 0.975)
+  set.seed(seed = 256)
+  for (idx in 1:nrow(pred)) {
+    tmp = pred %>% 
+      slice(idx) %>% 
+      select(starts_with("Gap.QR")) %>%
+      pivot_longer(cols = starts_with("Gap.QR"), 
+                   names_to = "Quantile", 
+                   values_to = "QR") %>% 
+      mutate(Prob = prob.cum)
+    fit.spline = lm(data = tmp, formula = QR ~ bSpline(Prob, Boundary.knots = c(0, 1)))
+    pred.spline = predict(object = fit.spline, newdata = data.frame(Prob = prob.int))
+    pred$Tail.Prob[idx] = sum(pred.spline >= th.prob) / n.sample
+  }
+  
+  df.gap = rbind(df.gap, pred)
+  # print(paste0("==== ", ogn, " ==== ", Sys.time(), " ===="))
+}
+
+#### prediction interval length => Interval.Length
+df.gap = df.gap %>% mutate(Interval.Length = Gap.QR0.975 - Gap.QR0.025)
+
+ofile = paste0(dir, "/example/example.model.uncertainty.tsv")
 fwrite(x = df.pred,
        file = ofile,
        quote = F, sep = "\t", row.names = F, col.names = T)

@@ -126,7 +126,7 @@ for (ogn in ogn.pool) {
   
   df.pred = rbind(df.pred,
                   pred %>% mutate(Organ = ogn, .before = 1))
-  print(paste0("==== ", ogn, " ==== ", Sys.time(), " ===="))
+  # print(paste0("==== ", ogn, " ==== ", Sys.time(), " ===="))
 }
 
 #### 3.5 Age gap interval length

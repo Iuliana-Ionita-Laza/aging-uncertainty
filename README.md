@@ -1,4 +1,4 @@
-# Quantile regression for proteomic age prediction
+# Quantifying predictive uncertainty in proteomic aging clocks
 
 This repository provides code and documentation for proteomic age prediction and predictive uncertainty quantification using quantile regression (QR), as described in our paper, "Beyond point estimates: quantifying predictive uncertainty reveals hidden dimensions of biological age acceleration and improves risk interpretation".
 
@@ -15,8 +15,8 @@ This repository provides code and documentation for proteomic age prediction and
 - tidyr [https://CRAN.R-project.org/package=tidyr](https://CRAN.R-project.org/package=tidyr)
 - stringr [https://CRAN.R-project.org/package=stringr](https://CRAN.R-project.org/package=stringr)
 - splines2 [https://CRAN.R-project.org/package=splines2](https://CRAN.R-project.org/package=splines2)
-- ggplot2 [https://CRAN.R-project.org/package=ggplot2](https://CRAN.R-project.org/package=ggplot2)
-- survival [https://CRAN.R-project.org/package=survival](https://CRAN.R-project.org/package=survival)
+- ggplot2 (for downstream analyses) [https://CRAN.R-project.org/package=ggplot2](https://CRAN.R-project.org/package=ggplot2)
+- survival (for downstream analyses) [https://CRAN.R-project.org/package=survival](https://CRAN.R-project.org/package=survival)
 - fsQRPPA (for model training) [https://anonymous.4open.science/r/fsQRPPA-6764/](https://anonymous.4open.science/r/fsQRPPA-6764/)
 
 
